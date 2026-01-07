@@ -45,12 +45,18 @@
           <property name="text">
            <string>Удалить</string>
           </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QRadioButton" name="rbtn_keep_dublicates">
           <property name="text">
            <string>Оставить</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -59,7 +65,11 @@
       <item row="0" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QLineEdit" name="le_get_photo"/>
+         <widget class="QLineEdit" name="le_get_photo">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="pbtn_get_photo">
@@ -76,7 +86,11 @@
       <item row="1" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <widget class="QLineEdit" name="le_save_photo"/>
+         <widget class="QLineEdit" name="le_save_photo">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="pbtn_save_photo">
@@ -110,6 +124,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="pbtn_finish">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Прервать полностью</string>
         </property>

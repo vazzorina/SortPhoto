@@ -9,14 +9,12 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    checking_paths.cpp \
     getting_exifdata.cpp \
     main.cpp \
     mainwindow.cpp \
     sorting_photo.cpp
 
 HEADERS += \
-    checking_paths.h \
     getting_exifdata.h \
     mainwindow.h \
     sorting_photo.h

@@ -1,1 +1,22 @@
+# Сборка и временные файлы Qt
+build/
+*.user
 *.autosave
+
+# Результаты компиляции
+*.exe
+*.o
+*.a
+*.so
+*.dll
+
+# Кэш и настройки IDE (Qt Creator / Clangd)
+.qtc_clangd/
+Makefile*
+object_script.*
+debug/
+release/
+
+# Системные файлы
+.DS_Store
+Thumbs.db
