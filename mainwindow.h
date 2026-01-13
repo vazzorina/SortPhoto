@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "getting_exifdata.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -20,19 +22,16 @@ public:
 private slots:
     void on_pbtn_get_photo_clicked();
     void on_pbtn_save_photo_clicked();
-
     void on_rbtn_delete_dublicates_toggled(bool checked);
-
     void on_pbtn_start_clicked();
-
     void on_pbtn_stop_clicked();
-
     void on_pbtn_finish_clicked();
 
 private:
     Ui::MainWindow *ui;
     QString path_get_photo = "";
     QString path_save_photo = "";
+    getting_exifdata* exif_date = new getting_exifdata();
     bool is_delete_dublicates = true;
     void get_path();
 };

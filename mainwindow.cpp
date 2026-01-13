@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "getting_exifdata.h"
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QStandardPaths>

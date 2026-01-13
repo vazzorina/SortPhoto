@@ -22,6 +22,24 @@ HEADERS += \
 FORMS += \
     mainwindow.ui
 
+INCLUDEPATH += $$PWD/lib/exiv2-mingw/include
+LIBS += -L$$PWD/lib/exiv2-mingw/lib -lexiv2
+LIBS_DIR = $$PWD/lib/exiv2-mingw/lib
+
+defineTest(copyToDestDir) {
+    files = $$1
+    dir = $$2
+    win32:dir ~= s,/,\\,g
+
+    for(file, files) {
+        win32:file ~= s,/,\\,g
+        QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$shell_quote($$file) $$shell_quote($$dir) $$escape_expand(\\n\\t)
+    }
+    export(QMAKE_POST_LINK)
+}
+
+copyToDestDir($$LIBS_DIR, $$OUT_PWD/debug)
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
