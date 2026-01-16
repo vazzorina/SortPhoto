@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "getting_exifdata.h"
+#include "sorting_photo.h"
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QStandardPaths>
@@ -64,6 +64,7 @@ void MainWindow::on_pbtn_start_clicked()
     else {
         ui->pbtn_start->setEnabled(false);
         ui->pbtn_finish->setEnabled(true);
+        photo_sorting->sort_photo(path_get_photo, path_save_photo, ui->te_logger, is_delete_dublicates);
         //фукция запуска сортировки
     }
 }

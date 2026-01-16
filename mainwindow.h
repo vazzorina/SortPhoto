@@ -2,8 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
-#include "getting_exifdata.h"
+#include "sorting_photo.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -31,8 +30,8 @@ private:
     Ui::MainWindow *ui;
     QString path_get_photo = "";
     QString path_save_photo = "";
-    getting_exifdata* exif_date = new getting_exifdata();
-    bool is_delete_dublicates = true;
+    sorting_photo *photo_sorting = new sorting_photo();
+    bool is_delete_dublicates = false;
     void get_path();
 };
 #endif // MAINWINDOW_H
