@@ -8,7 +8,7 @@
 
 getting_exifdata::getting_exifdata() {}
 
-QDate getting_exifdata::get_exif_date(QString file, QTextEdit* te) {
+QDate getting_exifdata::get_exif_date(QString file, QTextEdit* te, bool is_delete_dupli) {
     std::string filePath = file.toLocal8Bit().constData();
 
     try {
@@ -26,7 +26,7 @@ QDate getting_exifdata::get_exif_date(QString file, QTextEdit* te) {
         }
         std::string id_photo = exifData["Exif.Photo.ImageUniqueID"].toString();
 
-        if (std::count(ID_photos.begin(), ID_photos.end(), id_photo) != 0) {
+        if (is_delete_dupli and std::count(ID_photos.begin(), ID_photos.end(), id_photo) != 0) {
             te->append("WARN: дубликат фотографии");
             return QDate();
         }
