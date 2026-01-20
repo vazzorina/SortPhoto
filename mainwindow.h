@@ -29,7 +29,6 @@ private:
     Ui::MainWindow *ui;
     QString path_get_photo = "";
     QString path_save_photo = "";
-    sorting_photo *photo_sorting = new sorting_photo();
     void get_path();
 };
 #endif // MAINWINDOW_H

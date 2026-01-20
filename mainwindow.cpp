@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QThread>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -60,7 +61,31 @@ void MainWindow::on_pbtn_start_clicked()
         ui->pbtn_start->setEnabled(false);
         ui->pbtn_finish->setEnabled(true);
         ui->pbtn_stop->setEnabled(true);
-        photo_sorting->sort_photo(path_get_photo, path_save_photo, ui->te_logger, ui->progress_bar);
+
+        QThread* thread = new QThread;
+        sorting_photo* sorting = new sorting_photo;
+        connect(thread, &QThread::started, [=](){
+            sorting->sort_photo(path_get_photo, path_save_photo);
+        });
+
+        connect(sorting, &sorting_photo::logMessage, ui->te_logger, &QTextEdit::append);
+        connect(sorting, &sorting_photo::progressChanged, ui->progress_bar, &QProgressBar::setValue);
+        connect(sorting, &sorting_photo::maxProgressChanged, ui->progress_bar, &QProgressBar::setMaximum);
+        connect(ui->pbtn_stop, &QPushButton::toggled, [sorting](bool checked){
+            sorting->setPaused(checked);
+        });
+        connect(ui->pbtn_finish, &QPushButton::clicked, [sorting](){
+            sorting->stop();
+        });
+
+        sorting->moveToThread(thread);
+        // Очистка памяти
+        connect(sorting, &sorting_photo::finished, thread, &QThread::quit);
+        connect(thread, &QThread::finished, sorting, &QObject::deleteLater);
+        connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+
+        thread->start();
+
         ui->pbtn_stop->setEnabled(false);
         ui->pbtn_finish->setText("Начать новую сортировку");
         //фукция запуска сортировки
