@@ -50,11 +50,6 @@ void MainWindow::get_path() {
     }
 }
 
-void MainWindow::on_rbtn_delete_dublicates_toggled(bool checked)
-{
-    is_delete_dublicates = checked;
-}
-
 
 void MainWindow::on_pbtn_start_clicked()
 {
@@ -64,7 +59,8 @@ void MainWindow::on_pbtn_start_clicked()
     else {
         ui->pbtn_start->setEnabled(false);
         ui->pbtn_finish->setEnabled(true);
-        photo_sorting->sort_photo(path_get_photo, path_save_photo, ui->te_logger, is_delete_dublicates);
+        ui->pbtn_stop->setEnabled(true);
+        photo_sorting->sort_photo(path_get_photo, path_save_photo, ui->te_logger);
         //фукция запуска сортировки
     }
 }
@@ -85,8 +81,13 @@ void MainWindow::on_pbtn_stop_clicked()
 
 void MainWindow::on_pbtn_finish_clicked()
 {
+    path_get_photo = "";
+    path_save_photo = "";
+    ui->le_save_photo->clear();
+    ui->le_get_photo->clear();
     ui->pbtn_start->setEnabled(true);
     ui->pbtn_finish->setEnabled(false);
+    ui->pbtn_stop->setEnabled(false);
     //функция полного прекращения сортировки
 }
 

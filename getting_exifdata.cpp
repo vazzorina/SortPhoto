@@ -9,7 +9,7 @@
 
 getting_exifdata::getting_exifdata() {}
 
-QDateTime getting_exifdata::get_exif_date(QString file, QTextEdit* te, bool is_delete_dupli) {
+QDateTime getting_exifdata::get_exif_date(QString file, QTextEdit* te) {
     std::string filePath = file.toLocal8Bit().constData();
 
     try {
@@ -23,11 +23,6 @@ QDateTime getting_exifdata::get_exif_date(QString file, QTextEdit* te, bool is_d
             dateStr = exifData["Exif.Photo.DateTimeOriginal"].toString();
         }
         std::string id_photo = exifData["Exif.Photo.ImageUniqueID"].toString();
-
-        if (is_delete_dupli and std::count(ID_photos.begin(), ID_photos.end(), id_photo) != 0) {
-            te->append("WARN: дубликат фотографии: " + QString::fromStdString(filePath));
-            return QDateTime();
-        }
 
         if (std::count(ID_photos.begin(), ID_photos.end(), id_photo) == 0) {
             ID_photos.push_back(id_photo);

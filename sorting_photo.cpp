@@ -8,7 +8,7 @@
 
 sorting_photo::sorting_photo() {}
 
-void sorting_photo::sort_photo(QString input_path, QString output_path, QTextEdit* te, bool is_delete_dublicate) {
+void sorting_photo::sort_photo(QString input_path, QString output_path, QTextEdit* te) {
     te->append("INFO: началась сортировка фотографий");
     QDirIterator input_catalog(input_path,
                                QStringList() << "*.png" << "*.jpg" << "*.jpeg",
@@ -21,7 +21,7 @@ void sorting_photo::sort_photo(QString input_path, QString output_path, QTextEdi
 
     while (input_catalog.hasNext()) {
         itemPath = input_catalog.next();
-        date = exif_date->get_exif_date(itemPath, te, is_delete_dublicate);
+        date = exif_date->get_exif_date(itemPath, te);
         year = QString::number(date.date().year());
         outp_path = output_path + "/" + year + "/" + date.toString("dd.MM.yyyy HH-mm") + "." + input_catalog.fileInfo().suffix();
         if (!date.isNull() and std::find(date_dirs.begin(), date_dirs.end(), year) != date_dirs.end()) {

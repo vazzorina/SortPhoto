@@ -8,7 +8,7 @@ class sorting_photo
 public:
     sorting_photo();
     getting_exifdata *exif_date = new getting_exifdata();
-    void sort_photo(QString input_path, QString output_path, QTextEdit* te, bool is_delete_dublicate);
+    void sort_photo(QString input_path, QString output_path, QTextEdit* te);
 };
 
 #endif // SORTING_PHOTO_H

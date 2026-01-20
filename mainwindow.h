@@ -21,7 +21,6 @@ public:
 private slots:
     void on_pbtn_get_photo_clicked();
     void on_pbtn_save_photo_clicked();
-    void on_rbtn_delete_dublicates_toggled(bool checked);
     void on_pbtn_start_clicked();
     void on_pbtn_stop_clicked();
     void on_pbtn_finish_clicked();
@@ -31,7 +30,6 @@ private:
     QString path_get_photo = "";
     QString path_save_photo = "";
     sorting_photo *photo_sorting = new sorting_photo();
-    bool is_delete_dublicates = false;
     void get_path();
 };
 #endif // MAINWINDOW_H
