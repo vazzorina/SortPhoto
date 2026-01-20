@@ -3,12 +3,14 @@
 
 #include "getting_exifdata.h"
 #include <QTextEdit>
+#include <QProgressBar>
+
 class sorting_photo
 {
 public:
     sorting_photo();
     getting_exifdata *exif_date = new getting_exifdata();
-    void sort_photo(QString input_path, QString output_path, QTextEdit* te);
+    void sort_photo(QString input_path, QString output_path, QTextEdit* te, QProgressBar* pb);
 };
 
 #endif // SORTING_PHOTO_H

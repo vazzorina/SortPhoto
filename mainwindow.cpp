@@ -60,7 +60,9 @@ void MainWindow::on_pbtn_start_clicked()
         ui->pbtn_start->setEnabled(false);
         ui->pbtn_finish->setEnabled(true);
         ui->pbtn_stop->setEnabled(true);
-        photo_sorting->sort_photo(path_get_photo, path_save_photo, ui->te_logger);
+        photo_sorting->sort_photo(path_get_photo, path_save_photo, ui->te_logger, ui->progress_bar);
+        ui->pbtn_stop->setEnabled(false);
+        ui->pbtn_finish->setText("Начать новую сортировку");
         //фукция запуска сортировки
     }
 }
@@ -81,13 +83,16 @@ void MainWindow::on_pbtn_stop_clicked()
 
 void MainWindow::on_pbtn_finish_clicked()
 {
+    ui->pbtn_finish->setText("Прервать полностью");
     path_get_photo = "";
     path_save_photo = "";
     ui->le_save_photo->clear();
     ui->le_get_photo->clear();
+    ui->te_logger->clear();
     ui->pbtn_start->setEnabled(true);
     ui->pbtn_finish->setEnabled(false);
     ui->pbtn_stop->setEnabled(false);
+    ui->progress_bar->setValue(0);
     //функция полного прекращения сортировки
 }
 

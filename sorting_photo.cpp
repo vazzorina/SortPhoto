@@ -8,7 +8,13 @@
 
 sorting_photo::sorting_photo() {}
 
-void sorting_photo::sort_photo(QString input_path, QString output_path, QTextEdit* te) {
+void sorting_photo::sort_photo(QString input_path, QString output_path, QTextEdit* te, QProgressBar* pb) {
+    QDir dir(input_path);
+    QStringList filters;
+    filters << "*.jpg" << "*.png" << "*.jpeg";
+    dir.setNameFilters(filters);
+    pb->setMaximum(dir.entryList(QDir::Files).count());
+
     te->append("INFO: началась сортировка фотографий");
     QDirIterator input_catalog(input_path,
                                QStringList() << "*.png" << "*.jpg" << "*.jpeg",
@@ -28,7 +34,7 @@ void sorting_photo::sort_photo(QString input_path, QString output_path, QTextEdi
             if (QFile::copy(itemPath, outp_path)) {
                 te->append("INFO: Файл успешно скопирован и переименован: " + outp_path);
             } else {
-                te->append("WARN: Ошибка при копировании: " + itemPath);
+                te->append("WARN: Ошибка при копировании (возможно дубликат): " + itemPath);
             }
         }
         else if (!date.isNull() and std::find(date_dirs.begin(), date_dirs.end(), year) == date_dirs.end()) {
@@ -38,12 +44,13 @@ void sorting_photo::sort_photo(QString input_path, QString output_path, QTextEdi
                 if (QFile::copy(itemPath, outp_path)) {
                     te->append("INFO: Файл успешно скопирован и переименован: " + outp_path);
                 } else {
-                    te->append("WARN: Ошибка при копировании: " + itemPath);
+                    te->append("WARN: Ошибка при копировании (возможно дубликат): " + itemPath);
                 }
             } else {
                 te->append("WARN: Не удалось создать путь: " + output_path + "/" + year);
             }
         }
+        pb->setValue(pb->value() + 1);
     }
 
     te->append("INFO: сортировка фотографий окончена");
