@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QThread>
 #include "sorting_photo.h"
 
 QT_BEGIN_NAMESPACE
@@ -22,13 +23,17 @@ private slots:
     void on_pbtn_get_photo_clicked();
     void on_pbtn_save_photo_clicked();
     void on_pbtn_start_clicked();
-    void on_pbtn_stop_clicked();
+
+    void on_pbtn_stop_toggled(bool checked);
+
     void on_pbtn_finish_clicked();
 
 private:
     Ui::MainWindow *ui;
+    sorting_photo* sorting = nullptr;
     QString path_get_photo = "";
     QString path_save_photo = "";
     void get_path();
+    void clear_ui();
 };
 #endif // MAINWINDOW_H

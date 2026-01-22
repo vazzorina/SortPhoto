@@ -26,7 +26,7 @@ QDateTime getting_exifdata::get_exif_date(QString file) {
         if (std::count(ID_photos.begin(), ID_photos.end(), id_photo) == 0) {
             ID_photos.push_back(id_photo);
         }
-        return QDateTime::fromString(QString::fromStdString(dateStr).left(16), "yyyy:MM:dd HH:mm");
+        return QDateTime::fromString(QString::fromStdString(dateStr), "yyyy:MM:dd HH:mm:ss");
     } catch (Exiv2::Error& e) {
         return QDateTime();
     }

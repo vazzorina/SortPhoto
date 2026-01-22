@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 #include <QThread>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -62,52 +63,41 @@ void MainWindow::on_pbtn_start_clicked()
         ui->pbtn_finish->setEnabled(true);
         ui->pbtn_stop->setEnabled(true);
 
-        QThread* thread = new QThread;
-        sorting_photo* sorting = new sorting_photo;
-        connect(thread, &QThread::started, [=](){
+        sorting = new sorting_photo();
+        QThread* thread = new QThread();
+
+        //запуск сортировки в отдельном процессе
+        connect(thread, &QThread::started, sorting, [=](){
             sorting->sort_photo(path_get_photo, path_save_photo);
         });
 
         connect(sorting, &sorting_photo::logMessage, ui->te_logger, &QTextEdit::append);
         connect(sorting, &sorting_photo::progressChanged, ui->progress_bar, &QProgressBar::setValue);
         connect(sorting, &sorting_photo::maxProgressChanged, ui->progress_bar, &QProgressBar::setMaximum);
-        connect(ui->pbtn_stop, &QPushButton::toggled, [sorting](bool checked){
-            sorting->setPaused(checked);
-        });
-        connect(ui->pbtn_finish, &QPushButton::clicked, [sorting](){
-            sorting->stop();
-        });
+        // connect(ui->pbtn_stop, &QPushButton::toggled, sorting, [=](bool checked){
 
-        sorting->moveToThread(thread);
+        // });
+
+         // connect(ui->pbtn_finish, &QPushButton::clicked, sorting, [=](){
+
+         // });
+
         // Очистка памяти
         connect(sorting, &sorting_photo::finished, thread, &QThread::quit);
         connect(thread, &QThread::finished, sorting, &QObject::deleteLater);
         connect(thread, &QThread::finished, thread, &QObject::deleteLater);
 
+        connect(sorting, &sorting_photo::finished, this, [this](){
+            ui->pbtn_finish->setText("Начать новую сортировку");
+        });
+
+        sorting->moveToThread(thread);
         thread->start();
-
-        ui->pbtn_stop->setEnabled(false);
-        ui->pbtn_finish->setText("Начать новую сортировку");
-        //фукция запуска сортировки
     }
 }
 
-
-void MainWindow::on_pbtn_stop_clicked()
-{
-    if(ui->pbtn_stop->text() == "Остановить"){
-        ui->pbtn_stop->setText("Продолжить");
-        //здесь будет функция остановки сортировки
-    }
-    else {
-        ui->pbtn_stop->setText("Остановить");
-        //здесь будет функция возобновления сортировки
-    }
-}
-
-
-void MainWindow::on_pbtn_finish_clicked()
-{
+void MainWindow::clear_ui() {
+    ui->pbtn_stop->setText("Остановить");
     ui->pbtn_finish->setText("Прервать полностью");
     path_get_photo = "";
     path_save_photo = "";
@@ -118,6 +108,34 @@ void MainWindow::on_pbtn_finish_clicked()
     ui->pbtn_finish->setEnabled(false);
     ui->pbtn_stop->setEnabled(false);
     ui->progress_bar->setValue(0);
-    //функция полного прекращения сортировки
+    ui->pbtn_stop->setChecked(false);
+    sorting = nullptr;
+}
+
+
+
+
+
+void MainWindow::on_pbtn_stop_toggled(bool checked)
+{
+    if (sorting) {
+        if (checked) {
+            ui->pbtn_stop->setText("Продолжить");
+            sorting->setPaused(true);
+        } else {
+            ui->pbtn_stop->setText("Остановить");
+            sorting->setPaused(false);
+        }
+    }
+}
+
+
+void MainWindow::on_pbtn_finish_clicked()
+{
+    if (sorting and ui->pbtn_finish->text() != "Начать новую сортировку") {
+        sorting->stop();
+        sorting->setPaused(false);
+    }
+    QTimer::singleShot(500, this, &MainWindow::clear_ui);
 }
 

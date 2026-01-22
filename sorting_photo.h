@@ -30,7 +30,7 @@ signals:
 private:
     std::atomic<bool> m_isPaused{false};
     std::atomic<bool> m_isStopped{false};
-    getting_exifdata* exif_date;
+    getting_exifdata* exif_date =  new getting_exifdata();
     QMutex m_pauseMutex;
     QWaitCondition m_pauseCondition;
 };

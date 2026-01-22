@@ -23,12 +23,17 @@ void sorting_photo::stop() {
 }
 
 void sorting_photo::sort_photo(QString input_path, QString output_path) {
-    QDir dir(input_path);
-    QStringList filters;
-    filters << "*.jpg" << "*.png" << "*.jpeg";
-    dir.setNameFilters(filters);
+    int totalFiles = 0;
+    QDirIterator count_it(input_path,
+                          QStringList() << "*.png" << "*.jpg" << "*.jpeg",
+                          QDir::Files,
+                          QDirIterator::Subdirectories);
+    while (count_it.hasNext()) {
+        count_it.next();
+        totalFiles++;
+    }
 
-    emit maxProgressChanged(dir.entryList(filters, QDir::Files).count());
+    emit maxProgressChanged(totalFiles); // Теперь максимум верный
     emit logMessage("INFO: началась сортировка фотографий");
 
     QDirIterator input_catalog(input_path,
@@ -42,10 +47,17 @@ void sorting_photo::sort_photo(QString input_path, QString output_path) {
     int currentProgress = 0;
 
     while (input_catalog.hasNext()) {
+        if (m_isStopped) break;
+        m_pauseMutex.lock();
+        while (m_isPaused) {
+            m_pauseCondition.wait(&m_pauseMutex);
+        }
+        m_pauseMutex.unlock();
+
         itemPath = input_catalog.next();
         date = exif_date->get_exif_date(itemPath);
         year = QString::number(date.date().year());
-        outp_path = output_path + "/" + year + "/" + date.toString("dd.MM.yyyy HH-mm") + "." + input_catalog.fileInfo().suffix();
+        outp_path = output_path + "/" + year + "/" + date.toString("dd.MM.yyyy HH-mm-ss") + "." + input_catalog.fileInfo().suffix();
         if (!date.isNull() and std::find(date_dirs.begin(), date_dirs.end(), year) != date_dirs.end()) {
             if (QFile::copy(itemPath, outp_path)) {
                 emit logMessage("INFO: Файл успешно скопирован и переименован: " + outp_path);
@@ -56,7 +68,7 @@ void sorting_photo::sort_photo(QString input_path, QString output_path) {
         else if (!date.isNull() and std::find(date_dirs.begin(), date_dirs.end(), year) == date_dirs.end()) {
             date_dirs.push_back(year);
             if (output_catalog.mkpath(output_path + "/" + year)) {
-                emit logMessage("INFO:Папки успешно созданы: " + output_path + "/" + year);
+                emit logMessage("INFO: Папки успешно созданы: " + output_path + "/" + year);
                 if (QFile::copy(itemPath, outp_path)) {
                     emit logMessage("INFO: Файл успешно скопирован и переименован: " + outp_path);
                 } else {
@@ -71,4 +83,5 @@ void sorting_photo::sort_photo(QString input_path, QString output_path) {
     }
 
     emit logMessage("INFO: сортировка фотографий окончена");
+    emit finished();
 }
