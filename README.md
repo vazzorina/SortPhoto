@@ -1,2 +1,19 @@
-# SortPhoto
-SortPhoto is a program for sorting photos by the date they were taken, indicated in the EXIF data. Photos are taken from a user-selected catalog or catalogs and sorted by the selected path into automatically created folders, grouped by year.
+# **SortPhoto**
+Программа SortPhoto нацелена на сортировку фотографий по дате их создания или последнего изменения в папки по годам. 
+Используемый стек разработки: *Qt Creator*, *C++*
+Дополнительные библиотеки: *exiv2*
+
+**Список задач**
+Нужно реализовать:
+[х] Логику выбора каталогов
+[х] Чтение exif-данных фотографии
+[х] Сортировку фотографий по папкам 
+[х] Отдельный поток для сортировки
+[] Оптимизацию кода
+[] Комментирование функций и классов
+
+В будущем хотелось бы реализовать:
+[] Дополнительную сортировку видео
+[] Возможность определять дубликаты фотографии/видео
+
+

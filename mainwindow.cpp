@@ -113,9 +113,6 @@ void MainWindow::clear_ui() {
 }
 
 
-
-
-
 void MainWindow::on_pbtn_stop_toggled(bool checked)
 {
     if (sorting) {
