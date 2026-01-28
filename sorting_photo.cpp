@@ -46,16 +46,17 @@ void sorting_photo::sort_photo(QString input_path, QString output_path) {
     QDateTime date;
     int currentProgress = 0;
     while (input_catalog.hasNext()) {
-        if (m_isStopped) {
-            emit logMessage("INFO: Сортировка полностью прервана.");
-            break;
-        }
         m_pauseMutex.lock();
         if(m_isPaused) emit logMessage("INFO: Сортировка приостановлена. Для продолжения нажмите \"Продолжить\"");
         while (m_isPaused) {
             m_pauseCondition.wait(&m_pauseMutex);
         }
         m_pauseMutex.unlock();
+
+        if (m_isStopped) {
+            emit logMessage("INFO: Сортировка полностью прервана.");
+            break;
+        }
 
         itemPath = input_catalog.next();
         date = exif_date->get_exif_date(itemPath);
@@ -70,17 +71,14 @@ void sorting_photo::sort_photo(QString input_path, QString output_path) {
             }
         }
 
-        if (QFile::copy(itemPath, outp_path)) {
-            emit logMessage("INFO: Файл успешно скопирован и переименован: " + outp_path);
-        } else {
-            int cnt = 1;
-            while(!QFile::copy(itemPath, outp_path)) {
-                outp_path = output_path + "/" + year + "/" + date.toString("dd.MM.yyyy HH-mm-ss") + " (" + QString::number(cnt)+ ")" + "." + input_catalog.fileInfo().suffix();
-                cnt++;
-                emit logMessage("WARN: Ошибка при копировании (возможно дубликат): " + outp_path);
-            }
-            emit logMessage("INFO: Файл успешно скопирован и переименован: " + outp_path);
+        int cnt = 1;
+        while(!QFile::copy(itemPath, outp_path)) {
+            outp_path = output_path + "/" + year + "/" + date.toString("dd.MM.yyyy HH-mm-ss") + " (" + QString::number(cnt)+ ")" + "." + input_catalog.fileInfo().suffix();
+            cnt++;
+            emit logMessage("WARN: Ошибка при копировании (возможно дубликат): " + outp_path);
         }
+        emit logMessage("INFO: Файл успешно скопирован и переименован: " + outp_path);
+
         currentProgress++;
         emit progressChanged(currentProgress);
     }
