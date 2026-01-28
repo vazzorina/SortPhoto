@@ -33,7 +33,7 @@ void sorting_photo::sort_photo(QString input_path, QString output_path) {
         totalFiles++;
     }
 
-    emit maxProgressChanged(totalFiles); // Теперь максимум верный
+    emit maxProgressChanged(totalFiles);
     emit logMessage("INFO: началась сортировка фотографий");
 
     QDirIterator input_catalog(input_path,
@@ -45,10 +45,13 @@ void sorting_photo::sort_photo(QString input_path, QString output_path) {
     QString itemPath, outp_path, year;
     QDateTime date;
     int currentProgress = 0;
-
     while (input_catalog.hasNext()) {
-        if (m_isStopped) break;
+        if (m_isStopped) {
+            emit logMessage("INFO: Сортировка полностью прервана.");
+            break;
+        }
         m_pauseMutex.lock();
+        if(m_isPaused) emit logMessage("INFO: Сортировка приостановлена. Для продолжения нажмите \"Продолжить\"");
         while (m_isPaused) {
             m_pauseCondition.wait(&m_pauseMutex);
         }
@@ -58,25 +61,25 @@ void sorting_photo::sort_photo(QString input_path, QString output_path) {
         date = exif_date->get_exif_date(itemPath);
         year = QString::number(date.date().year());
         outp_path = output_path + "/" + year + "/" + date.toString("dd.MM.yyyy HH-mm-ss") + "." + input_catalog.fileInfo().suffix();
-        if (!date.isNull() and std::find(date_dirs.begin(), date_dirs.end(), year) != date_dirs.end()) {
-            if (QFile::copy(itemPath, outp_path)) {
-                emit logMessage("INFO: Файл успешно скопирован и переименован: " + outp_path);
-            } else {
-                emit logMessage("WARN: Ошибка при копировании (возможно дубликат): " + itemPath);
-            }
-        }
-        else if (!date.isNull() and std::find(date_dirs.begin(), date_dirs.end(), year) == date_dirs.end()) {
+        if (!date.isNull() and std::find(date_dirs.begin(), date_dirs.end(), year) == date_dirs.end()) {
             date_dirs.push_back(year);
             if (output_catalog.mkpath(output_path + "/" + year)) {
                 emit logMessage("INFO: Папки успешно созданы: " + output_path + "/" + year);
-                if (QFile::copy(itemPath, outp_path)) {
-                    emit logMessage("INFO: Файл успешно скопирован и переименован: " + outp_path);
-                } else {
-                    emit logMessage("WARN: Ошибка при копировании (возможно дубликат): " + itemPath);
-                }
             } else {
                 emit logMessage("WARN: Не удалось создать путь: " + output_path + "/" + year);
             }
+        }
+
+        if (QFile::copy(itemPath, outp_path)) {
+            emit logMessage("INFO: Файл успешно скопирован и переименован: " + outp_path);
+        } else {
+            int cnt = 1;
+            while(!QFile::copy(itemPath, outp_path)) {
+                outp_path = output_path + "/" + year + "/" + date.toString("dd.MM.yyyy HH-mm-ss") + " (" + QString::number(cnt)+ ")" + "." + input_catalog.fileInfo().suffix();
+                cnt++;
+                emit logMessage("WARN: Ошибка при копировании (возможно дубликат): " + outp_path);
+            }
+            emit logMessage("INFO: Файл успешно скопирован и переименован: " + outp_path);
         }
         currentProgress++;
         emit progressChanged(currentProgress);
