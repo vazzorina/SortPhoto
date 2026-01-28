@@ -9,7 +9,9 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-sorting_photo::sorting_photo(QObject *parent) : QObject(parent) {}
+sorting_photo::sorting_photo(QObject *parent) : QObject(parent) {
+    exif_date = new getting_exifdata(this);
+}
 
 void sorting_photo::setPaused(bool paused) {
     m_isPaused = paused;
